@@ -1,0 +1,6 @@
+{
+  "name": "RestoQR",
+  "description": "A SaaS platform for restaurants and cafes with QR menus, ordering, and admin dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

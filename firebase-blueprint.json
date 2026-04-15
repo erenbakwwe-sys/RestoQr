@@ -1,0 +1,140 @@
+{
+  "entities": {
+    "Restaurant": {
+      "title": "Restaurant",
+      "description": "A restaurant account",
+      "type": "object",
+      "properties": {
+        "ownerId": { "type": "string", "description": "UID of the owner" },
+        "name": { "type": "string" },
+        "city": { "type": "string" },
+        "phone": { "type": "string" },
+        "businessType": { "type": "string" },
+        "tableCount": { "type": "number" },
+        "menuUploaded": { "type": "boolean" },
+        "trialEndsAt": { "type": "string", "format": "date-time" },
+        "subscriptionStatus": { "type": "string", "enum": ["trial", "active", "expired"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "theme": {
+          "type": "object",
+          "properties": {
+            "primaryColor": { "type": "string" },
+            "backgroundColor": { "type": "string" },
+            "textColor": { "type": "string" },
+            "cardBackgroundColor": { "type": "string" },
+            "cardTextColor": { "type": "string" },
+            "mode": { "type": "string", "enum": ["light", "dark"] },
+            "cardStyle": { "type": "string", "enum": ["horizontal", "vertical"] },
+            "fontFamily": { "type": "string" },
+            "fontImport": { "type": "string" },
+            "customCSS": { "type": "string" },
+            "buttonStyle": { "type": "string", "enum": ["rounded-none", "rounded-md", "rounded-full", "rounded-xl"] }
+          }
+        }
+      },
+      "required": ["ownerId", "name", "trialEndsAt", "subscriptionStatus", "createdAt"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Menu category",
+      "type": "object",
+      "properties": {
+        "restaurantId": { "type": "string" },
+        "name": { "type": "string" },
+        "order": { "type": "number" }
+      },
+      "required": ["restaurantId", "name", "order"]
+    },
+    "MenuItem": {
+      "title": "MenuItem",
+      "description": "A menu item",
+      "type": "object",
+      "properties": {
+        "restaurantId": { "type": "string" },
+        "categoryId": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "number" },
+        "imageUrl": { "type": "string" },
+        "isAvailable": { "type": "boolean" }
+      },
+      "required": ["restaurantId", "categoryId", "name", "price", "isAvailable"]
+    },
+    "Table": {
+      "title": "Table",
+      "description": "A table in the restaurant",
+      "type": "object",
+      "properties": {
+        "restaurantId": { "type": "string" },
+        "tableNumber": { "type": "string" },
+        "qrCode": { "type": "string" }
+      },
+      "required": ["restaurantId", "tableNumber", "qrCode"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "A customer order",
+      "type": "object",
+      "properties": {
+        "restaurantId": { "type": "string" },
+        "tableNumber": { "type": "string" },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "menuItemId": { "type": "string" },
+              "name": { "type": "string" },
+              "price": { "type": "number" },
+              "quantity": { "type": "number" }
+            }
+          }
+        },
+        "totalAmount": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "preparing", "ready", "delivered", "cancelled"] },
+        "paymentMethod": { "type": "string", "enum": ["pos", "cash"] },
+        "paymentStatus": { "type": "string", "enum": ["pending", "paid"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["restaurantId", "tableNumber", "items", "totalAmount", "status", "paymentMethod", "paymentStatus", "createdAt"]
+    },
+    "WaiterCall": {
+      "title": "WaiterCall",
+      "description": "A call for a waiter from a table",
+      "type": "object",
+      "properties": {
+        "restaurantId": { "type": "string" },
+        "tableNumber": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "resolved"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["restaurantId", "tableNumber", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "restaurants/{restaurantId}": {
+      "schema": "Restaurant",
+      "description": "Stores restaurant accounts"
+    },
+    "categories/{categoryId}": {
+      "schema": "Category",
+      "description": "Stores menu categories"
+    },
+    "menuItems/{menuItemId}": {
+      "schema": "MenuItem",
+      "description": "Stores menu items"
+    },
+    "tables/{tableId}": {
+      "schema": "Table",
+      "description": "Stores tables"
+    },
+    "orders/{orderId}": {
+      "schema": "Order",
+      "description": "Stores customer orders"
+    },
+    "waiterCalls/{callId}": {
+      "schema": "WaiterCall",
+      "description": "Stores waiter calls"
+    }
+  }
+}

@@ -1,0 +1,149 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(ownerId) {
+      return isAuthenticated() && request.auth.uid == ownerId;
+    }
+    
+    function getRestaurant(restaurantId) {
+      return get(/databases/$(database)/documents/restaurants/$(restaurantId)).data;
+    }
+    
+    function isRestaurantOwner(restaurantId) {
+      return isAuthenticated() && getRestaurant(restaurantId).ownerId == request.auth.uid;
+    }
+
+    function isValidString(val, minLen, maxLen) {
+      return val is string && val.size() >= minLen && val.size() <= maxLen;
+    }
+    
+    function isValidNumber(val, min, max) {
+      return val is number && val >= min && val <= max;
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+    
+    function isValidRestaurant(data) {
+      return data.keys().hasAll(['ownerId', 'name', 'trialEndsAt', 'subscriptionStatus', 'createdAt']) &&
+             data.ownerId is string &&
+             isValidString(data.name, 1, 100) &&
+             data.trialEndsAt is string &&
+             data.subscriptionStatus in ['trial', 'active', 'expired'] &&
+             data.createdAt is string;
+    }
+    
+    function isValidCategory(data) {
+      return data.keys().hasAll(['restaurantId', 'name', 'order']) &&
+             data.restaurantId is string &&
+             isValidString(data.name, 1, 50) &&
+             data.order is number;
+    }
+    
+    function isValidMenuItem(data) {
+      return data.keys().hasAll(['restaurantId', 'categoryId', 'name', 'price', 'isAvailable']) &&
+             data.restaurantId is string &&
+             data.categoryId is string &&
+             isValidString(data.name, 1, 100) &&
+             data.price is number && data.price >= 0 &&
+             data.isAvailable is bool;
+    }
+    
+    function isValidTable(data) {
+      return data.keys().hasAll(['restaurantId', 'tableNumber', 'qrCode']) &&
+             data.restaurantId is string &&
+             isValidString(data.tableNumber, 1, 20) &&
+             data.qrCode is string;
+    }
+    
+    function isValidOrder(data) {
+      return data.keys().hasAll(['restaurantId', 'tableNumber', 'items', 'totalAmount', 'status', 'paymentMethod', 'paymentStatus', 'createdAt']) &&
+             data.restaurantId is string &&
+             isValidString(data.tableNumber, 1, 20) &&
+             data.items is list && data.items.size() > 0 && data.items.size() <= 50 &&
+             data.totalAmount is number && data.totalAmount >= 0 &&
+             data.status in ['pending', 'preparing', 'ready', 'delivered', 'cancelled'] &&
+             data.paymentMethod in ['pos', 'cash'] &&
+             data.paymentStatus in ['pending', 'paid'] &&
+             data.createdAt is string;
+    }
+    
+    function isValidWaiterCall(data) {
+      return data.keys().hasAll(['restaurantId', 'tableNumber', 'status', 'createdAt']) &&
+             data.restaurantId is string &&
+             isValidString(data.tableNumber, 1, 20) &&
+             data.status in ['pending', 'resolved'] &&
+             data.createdAt is string;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /restaurants/{restaurantId} {
+      allow read: if true; // Public read for customer menu
+      allow create: if isAuthenticated() && 
+                    isValidRestaurant(request.resource.data) && 
+                    request.resource.data.ownerId == request.auth.uid;
+      allow update: if isOwner(resource.data.ownerId) && 
+                    isValidRestaurant(request.resource.data) && 
+                    request.resource.data.ownerId == resource.data.ownerId;
+    }
+
+    match /categories/{categoryId} {
+      allow read: if true; // Public for menu viewing
+      allow create: if isRestaurantOwner(request.resource.data.restaurantId) && isValidCategory(request.resource.data);
+      allow update: if isRestaurantOwner(resource.data.restaurantId) && 
+                    isValidCategory(request.resource.data) &&
+                    request.resource.data.restaurantId == resource.data.restaurantId;
+      allow delete: if isRestaurantOwner(resource.data.restaurantId);
+    }
+
+    match /menuItems/{menuItemId} {
+      allow read: if true; // Public for menu viewing
+      allow create: if isRestaurantOwner(request.resource.data.restaurantId) && isValidMenuItem(request.resource.data);
+      allow update: if isRestaurantOwner(resource.data.restaurantId) && 
+                    isValidMenuItem(request.resource.data) &&
+                    request.resource.data.restaurantId == resource.data.restaurantId;
+      allow delete: if isRestaurantOwner(resource.data.restaurantId);
+    }
+
+    match /tables/{tableId} {
+      allow read: if true; // Public for QR code scanning
+      allow create: if isRestaurantOwner(request.resource.data.restaurantId) && isValidTable(request.resource.data);
+      allow update: if isRestaurantOwner(resource.data.restaurantId) && 
+                    isValidTable(request.resource.data) &&
+                    request.resource.data.restaurantId == resource.data.restaurantId;
+      allow delete: if isRestaurantOwner(resource.data.restaurantId);
+    }
+
+    match /orders/{orderId} {
+      allow read: if isRestaurantOwner(resource.data.restaurantId);
+      allow create: if isValidOrder(request.resource.data); // Public creation for customers
+      allow update: if isRestaurantOwner(resource.data.restaurantId) && 
+                    isValidOrder(request.resource.data) &&
+                    request.resource.data.restaurantId == resource.data.restaurantId;
+      allow delete: if isRestaurantOwner(resource.data.restaurantId);
+    }
+
+    match /waiterCalls/{callId} {
+      allow read: if isRestaurantOwner(resource.data.restaurantId);
+      allow create: if isValidWaiterCall(request.resource.data); // Public creation for customers
+      allow update: if isRestaurantOwner(resource.data.restaurantId) && 
+                    isValidWaiterCall(request.resource.data) &&
+                    request.resource.data.restaurantId == resource.data.restaurantId;
+      allow delete: if isRestaurantOwner(resource.data.restaurantId);
+    }
+  }
+}
