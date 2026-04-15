@@ -308,7 +308,7 @@ export default function MenuManagement() {
           >
             <motion.div 
               initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white p-8 rounded-3xl w-full max-w-lg shadow-2xl relative overflow-hidden"
+              className="bg-white p-6 sm:p-8 rounded-3xl w-full max-w-lg shadow-2xl relative overflow-hidden max-h-[90vh] overflow-y-auto"
             >
               <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-purple-500 to-indigo-500 opacity-5 rounded-bl-full -mr-10 -mt-10"></div>
               <div className="flex items-center gap-3 mb-6 relative z-10">
@@ -350,7 +350,7 @@ export default function MenuManagement() {
           >
             <motion.div 
               initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white p-8 rounded-3xl w-full max-w-md shadow-2xl"
+              className="bg-white p-6 sm:p-8 rounded-3xl w-full max-w-md shadow-2xl"
             >
               <h3 className="text-2xl font-extrabold text-slate-900 mb-6">Kategori Ekle</h3>
               <input type="text" value={categoryName} onChange={e => setCategoryName(e.target.value)} placeholder="Kategori Adı (Örn: Başlangıçlar)" className="w-full border-0 ring-1 ring-slate-200 p-4 rounded-xl mb-8 focus:ring-2 focus:ring-indigo-600 transition-all" />
@@ -369,7 +369,7 @@ export default function MenuManagement() {
           >
             <motion.div 
               initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white p-8 rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl"
+              className="bg-white p-6 sm:p-8 rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl"
             >
               <h3 className="text-2xl font-extrabold text-slate-900 mb-6">{itemForm.id ? 'Ürünü Düzenle' : 'Yeni Ürün Ekle'}</h3>
               <div className="space-y-5">

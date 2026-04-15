@@ -4,7 +4,7 @@ import { collection, query, where, onSnapshot, doc, updateDoc } from 'firebase/f
 import { db } from '../../firebase';
 import { handleFirestoreError, OperationType } from '../../utils/firestoreErrorHandler';
 import { format } from 'date-fns';
-import { BellRing, CheckCircle } from 'lucide-react';
+import { BellRing, CheckCircle, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function WaiterCalls() {
@@ -86,6 +86,3 @@ export default function WaiterCalls() {
     </motion.div>
   );
 }
-
-// Quick fix for missing Clock icon import
-import { Clock } from 'lucide-react';

@@ -135,10 +135,10 @@ export default function ThemeSettings() {
         </motion.div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         {/* AI Generator */}
-        <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-purple-500 to-indigo-500 opacity-5 rounded-bl-full -mr-10 -mt-10"></div>
+        <div className="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 sm:w-40 sm:h-40 bg-gradient-to-br from-purple-500 to-indigo-500 opacity-5 rounded-bl-full -mr-10 -mt-10"></div>
           <div className="flex items-center gap-3 mb-6 relative z-10">
             <div className="p-3 bg-purple-100 text-purple-600 rounded-xl">
               <Sparkles className="w-6 h-6" />
@@ -154,7 +154,7 @@ export default function ThemeSettings() {
               value={aiPrompt}
               onChange={(e) => setAiPrompt(e.target.value)}
               placeholder="Örn: Karanlık temalı, lüks bir steakhouse. Altın sarısı vurgular, büyük resimli dikey kartlar ve siyah arka plan..."
-              className="w-full border-0 ring-1 ring-slate-200 rounded-xl p-4 focus:ring-2 focus:ring-purple-600 resize-none h-32 transition-all"
+              className="w-full border-0 ring-1 ring-slate-200 rounded-xl p-4 focus:ring-2 focus:ring-purple-600 resize-none h-32 transition-all text-sm sm:text-base"
             />
             <button 
               onClick={generateAITheme}
@@ -167,21 +167,21 @@ export default function ThemeSettings() {
         </div>
 
         {/* Manual Settings */}
-        <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-          <div className="flex items-center justify-between mb-8">
+        <div className="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-100">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
             <div className="flex items-center gap-3">
               <div className="p-3 bg-indigo-100 text-indigo-600 rounded-xl">
                 <Palette className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-slate-900">Manuel Ayarlar</h3>
             </div>
-            <div className="flex gap-2 bg-slate-100 p-1 rounded-lg">
-              <button onClick={() => setActiveTab('basic')} className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'basic' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500'}`}>Temel</button>
-              <button onClick={() => setActiveTab('advanced')} className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-1 ${activeTab === 'advanced' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500'}`}><Code className="w-3 h-3"/> CSS</button>
+            <div className="flex gap-2 bg-slate-100 p-1 rounded-lg w-full sm:w-auto">
+              <button onClick={() => setActiveTab('basic')} className={`flex-1 sm:flex-none px-4 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'basic' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500'}`}>Temel</button>
+              <button onClick={() => setActiveTab('advanced')} className={`flex-1 sm:flex-none px-4 py-1.5 text-xs font-bold rounded-md transition-all flex items-center justify-center gap-1 ${activeTab === 'advanced' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500'}`}><Code className="w-3 h-3"/> CSS</button>
             </div>
           </div>
 
-          <div className="space-y-8 h-96 overflow-y-auto pr-2">
+          <div className="space-y-8 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
             {activeTab === 'basic' ? (
               <>
                 {/* Colors */}
@@ -327,17 +327,18 @@ export default function ThemeSettings() {
       </div>
 
       {/* Preview */}
-      <div className="bg-slate-50 p-8 rounded-3xl border border-slate-200 mt-8">
+      <div className="bg-slate-50 p-4 sm:p-8 rounded-3xl border border-slate-200 mt-8 overflow-hidden">
         <h3 className="text-lg font-bold text-slate-500 uppercase tracking-wider mb-6 text-center">Müşteri Menüsü Önizleme</h3>
-        <div 
-          id="customer-menu"
-          className="menu-wrapper max-w-sm mx-auto rounded-[2.5rem] shadow-2xl overflow-hidden border-[8px] border-slate-800 relative h-[600px] flex flex-col" 
-          style={{ 
-            backgroundColor: theme.backgroundColor, 
-            color: theme.textColor,
-            fontFamily: theme.fontFamily.includes(',') ? theme.fontFamily : `var(--font-${theme.fontFamily})`
-          }}
-        >
+        <div className="flex justify-center">
+          <div 
+            id="customer-menu"
+            className="menu-wrapper w-full max-w-[360px] rounded-[2.5rem] shadow-2xl overflow-hidden border-[8px] border-slate-800 relative h-[600px] flex flex-col" 
+            style={{ 
+              backgroundColor: theme.backgroundColor, 
+              color: theme.textColor,
+              fontFamily: theme.fontFamily.includes(',') ? theme.fontFamily : `var(--font-${theme.fontFamily})`
+            }}
+          >
           <style>{theme.fontImport}</style>
           <style>{theme.customCSS}</style>
 
@@ -380,6 +381,7 @@ export default function ThemeSettings() {
           </div>
         </div>
       </div>
+    </div>
     </motion.div>
   );
 }

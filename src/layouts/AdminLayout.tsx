@@ -32,6 +32,7 @@ export default function AdminLayout() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const [runTutorial, setRunTutorial] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [tutorialSteps] = useState([
     {
       target: '.nav-dashboard',
@@ -138,7 +139,7 @@ export default function AdminLayout() {
   );
 
   return (
-    <div className="flex h-screen bg-slate-50 font-sans">
+    <div className="flex h-screen bg-slate-50 font-sans overflow-hidden">
       <Joyride
         steps={tutorialSteps}
         run={runTutorial}
@@ -180,16 +181,56 @@ export default function AdminLayout() {
         }}
       />
 
+      {/* Mobile Header */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-100 flex items-center justify-between px-4 z-20">
+        <div className="flex items-center gap-2">
+          <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-1.5 rounded-lg">
+            <Utensils className="h-5 w-5 text-white" />
+          </div>
+          <span className="font-bold text-slate-900 truncate max-w-[150px]">{restaurant.name}</span>
+        </div>
+        <button 
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="p-2 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
+        >
+          <Menu className="h-6 w-6" />
+        </button>
+      </div>
+
+      {/* Sidebar Overlay */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsSidebarOpen(false)}
+            className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-30 lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Sidebar */}
-      <div className="w-72 bg-white shadow-xl shadow-slate-200/50 flex flex-col z-10">
-        <div className="p-6 flex items-center gap-3">
-          <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-2 rounded-xl shadow-md">
-            <Utensils className="h-6 w-6 text-white" />
+      <div className={`
+        fixed inset-y-0 left-0 w-72 bg-white shadow-xl shadow-slate-200/50 flex flex-col z-40 transition-transform duration-300 transform
+        lg:relative lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+      `}>
+        <div className="p-6 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-2 rounded-xl shadow-md">
+              <Utensils className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-extrabold text-slate-900 truncate max-w-[140px]">{restaurant.name}</h1>
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Yönetim Paneli</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl font-extrabold text-slate-900 truncate">{restaurant.name}</h1>
-            <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Yönetim Paneli</p>
-          </div>
+          <button 
+            onClick={() => setIsSidebarOpen(false)}
+            className="lg:hidden p-2 text-slate-400 hover:text-slate-600"
+          >
+            <LogOut className="h-5 w-5 rotate-180" />
+          </button>
         </div>
         
         <nav className="flex-1 px-4 space-y-2 overflow-y-auto mt-4">
@@ -199,6 +240,7 @@ export default function AdminLayout() {
               <Link
                 key={item.name}
                 to={item.href}
+                onClick={() => setIsSidebarOpen(false)}
                 className={`${item.className} flex items-center justify-between px-4 py-3 text-sm font-bold rounded-2xl transition-all duration-200 ${
                   isActive 
                     ? 'bg-indigo-50 text-indigo-700 shadow-sm' 
@@ -241,8 +283,8 @@ export default function AdminLayout() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        <div className="p-8 max-w-7xl mx-auto">
+      <div className="flex-1 overflow-auto pt-16 lg:pt-0">
+        <div className="p-4 sm:p-8 max-w-7xl mx-auto">
           <Outlet context={{ restaurant }} />
         </div>
       </div>
